@@ -95,7 +95,7 @@ class Manager
             return new \WP_Error('invalid_project', 'Proyecto inválido o no encontrado');
         }
 
-        $current_state = get_post_meta($proyecto_id, '_gobi_estado', true);
+        $current_state = get_post_meta($proyecto_id, '_gobi_estado', true) ?: 'presentado';
 
         // Check if transition is valid
         if (!self::can_transition($current_state, $new_state)) {
@@ -150,7 +150,7 @@ class Manager
         $reason = isset($_POST['gobi_estado_motivo']) ? sanitize_textarea_field($_POST['gobi_estado_motivo']) : '';
 
         // Only change if state is different
-        $current_state = get_post_meta($post_id, '_gobi_estado', true);
+        $current_state = get_post_meta($post_id, '_gobi_estado', true) ?: 'presentado';
         if ($new_state === $current_state) {
             return;
         }

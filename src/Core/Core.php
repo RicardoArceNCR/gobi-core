@@ -47,5 +47,6 @@ class Core
 
         // Bitacora
         require_once GOBI_CORE_PATH . 'src/Bitacora/Logger.php';
+        \Gobi\Bitacora\Logger::init();
     }
 }
