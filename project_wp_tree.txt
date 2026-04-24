@@ -1,0 +1,21 @@
+.
+├── README.md
+├── gobi-core.php
+├── project_wp_tree.txt
+└── src
+    ├── Bitacora
+    │   └── Logger.php
+    ├── CPT
+    │   └── Register.php
+    ├── Capabilities
+    │   └── Register.php
+    ├── Core
+    │   └── Core.php
+    ├── Relations
+    │   └── Country.php
+    ├── Taxonomies
+    │   └── Register.php
+    └── Workflow
+        └── Manager.php
+
+9 directories, 10 files
