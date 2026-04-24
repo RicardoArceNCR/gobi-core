@@ -60,8 +60,8 @@ class Manager
         return [
             'presentado' => ['en_comision', 'archivado'],
             'en_comision' => ['en_debate', 'archivado'],
-            'en_debate' => ['votado', 'archivado'],
-            'votado' => ['aprobado', 'archivado'],
+            'en_debate' => ['votado', 'en_comision', 'archivado'],
+            'votado' => ['aprobado', 'en_debate', 'en_comision', 'archivado'],
             'aprobado' => [],
             'archivado' => [],
         ];
