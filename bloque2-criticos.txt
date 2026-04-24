@@ -1,0 +1,20 @@
+========================================
+FILE: plugins/gobi-core/gobi-core.php
+========================================
+[NO EXISTE]
+
+========================================
+FILE: plugins/gobi-core/src/Core/Core.php
+========================================
+[NO EXISTE]
+
+========================================
+FILE: plugins/gobi-core/src/CPT/Register.php
+========================================
+[NO EXISTE]
+
+========================================
+FILE: plugins/gobi-core/src/Workflow/Manager.php
+========================================
+[NO EXISTE]
+
