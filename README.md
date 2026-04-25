@@ -43,6 +43,20 @@ Inicialmente aplica a:
 
 Esta decisión permite crecer hacia portadas, fuentes, reglas legislativas y equipos editoriales por país sin crear múltiples instalaciones WordPress.
 
+## Relaciones por País
+
+`gobi_pais` funciona como entidad base para separar datos regionales.
+
+Reglas actuales:
+- Un proyecto pertenece a un país.
+- Una comisión pertenece a un país.
+- Un proyecto solo puede asociarse a comisiones del mismo país.
+
+Pendiente siguiente fase:
+- Asociar partidos a país.
+- Asociar diputados a país y partido.
+- Modelar apoyos/oposiciones por proyecto.
+
 ## Sistema de Workflow
 
 ### Estados de Proyectos

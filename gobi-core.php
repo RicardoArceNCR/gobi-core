@@ -61,30 +61,7 @@ add_action('plugins_loaded', 'gobi_core_init');
 /**
  * Plugin activation hook.
  */
-register_activation_hook(__FILE__, function () {
-    // Create custom table for bitacora
-    global $wpdb;
-    
-    $table = $wpdb->prefix . 'gobi_bitacora';
-    
-    $sql = "CREATE TABLE $table (
-        id BIGINT AUTO_INCREMENT PRIMARY KEY,
-        entidad VARCHAR(50),
-        entidad_id BIGINT,
-        accion VARCHAR(50),
-        valor_anterior TEXT,
-        valor_nuevo TEXT,
-        motivo TEXT,
-        usuario BIGINT,
-        fecha DATETIME
-    )";
-    
-    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    dbDelta($sql);
-    
-    // Flush rewrite rules for CPTs
-    flush_rewrite_rules();
-});
+register_activation_hook(__FILE__, ['Gobi\Core\Core', 'activate']);
 
 /**
  * Plugin deactivation hook.

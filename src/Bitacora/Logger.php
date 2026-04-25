@@ -56,7 +56,7 @@ class Logger
             $data['fecha'] = current_time('mysql');
         }
 
-        $wpdb->insert($table, [
+        $inserted = $wpdb->insert($table, [
             'entidad' => sanitize_text_field($data['entidad']),
             'entidad_id' => intval($data['entidad_id']),
             'accion' => sanitize_text_field($data['accion']),
@@ -64,8 +64,12 @@ class Logger
             'valor_nuevo' => sanitize_textarea_field($data['valor_nuevo']),
             'motivo' => sanitize_textarea_field($data['motivo']),
             'usuario' => intval($data['usuario']),
-            'fecha' => $data['fecha']
+            'fecha' => sanitize_text_field($data['fecha'])
         ]);
+
+        if ($inserted === false && defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('GOBi Bitacora insert error: ' . $wpdb->last_error);
+        }
     }
 
     /**
@@ -246,6 +250,40 @@ class Logger
         } else {
             return $_SERVER['REMOTE_ADDR'] ?? '';
         }
+    }
+
+    /**
+     * Create the audit log table.
+     *
+     * @return void
+     */
+    public static function create_table()
+    {
+        global $wpdb;
+
+        $table_name = $wpdb->prefix . 'gobi_bitacora';
+
+        $charset_collate = $wpdb->get_charset_collate();
+
+        $sql = "CREATE TABLE $table_name (
+            id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            entidad VARCHAR(50) NOT NULL,
+            entidad_id BIGINT UNSIGNED NOT NULL,
+            accion VARCHAR(50) NOT NULL,
+            valor_anterior TEXT,
+            valor_nuevo TEXT,
+            motivo TEXT,
+            usuario BIGINT UNSIGNED NOT NULL,
+            fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            INDEX idx_entidad (entidad),
+            INDEX idx_entidad_id (entidad_id),
+            INDEX idx_usuario (usuario),
+            INDEX idx_fecha (fecha)
+        ) $charset_collate;";
+
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        dbDelta($sql);
     }
 
     /**

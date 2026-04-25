@@ -305,6 +305,58 @@ class Register
     }
 
     /**
+     * Render comision selector field.
+     *
+     * @param WP_Post $post Current post object.
+     * @return void
+     */
+    private static function render_comision_selector($post)
+    {
+        $selected_country = absint(get_post_meta($post->ID, '_gobi_pais_id', true));
+        $selected_comision = absint(get_post_meta($post->ID, '_gobi_comision_id', true));
+
+        echo '<tr>';
+        echo '<th><label for="gobi_comision_id">' . esc_html__('Comisión Asignada', 'gobi-core') . '</label></th>';
+        echo '<td><select id="gobi_comision_id" name="gobi_comision_id">';
+        echo '<option value="">' . esc_html__('Seleccionar comisión...', 'gobi-core') . '</option>';
+
+        if (!$selected_country) {
+            echo '<option value="" disabled>' . esc_html__('Primero seleccione y guarde un país', 'gobi-core') . '</option>';
+            echo '</select></td>';
+            echo '</tr>';
+            return;
+        }
+
+        $comisiones = get_posts([
+            'post_type' => 'gobi_comision',
+            'posts_per_page' => -1,
+            'orderby' => 'title',
+            'order' => 'ASC',
+            'meta_query' => [
+                [
+                    'key' => '_gobi_pais_id',
+                    'value' => $selected_country,
+                    'compare' => '=',
+                    'type' => 'NUMERIC',
+                ],
+            ],
+        ]);
+
+        foreach ($comisiones as $comision) {
+            $pais = get_the_title($selected_country);
+            $label = sprintf('%s — %s', $comision->post_title, $pais);
+            $selected = selected($selected_comision, $comision->ID, false);
+
+            echo '<option value="' . esc_attr($comision->ID) . '"' . $selected . '>' . esc_html($label) . '</option>';
+        }
+
+        echo '</select>';
+        echo '<p class="description">' . esc_html__('Solo se muestran comisiones del país seleccionado. Si cambia el país, guarde y vuelva a elegir comisión.', 'gobi-core') . '</p>';
+        echo '</td>';
+        echo '</tr>';
+    }
+
+    /**
      * Render proyecto meta box.
      *
      * @param WP_Post $post Current post object.
@@ -356,28 +408,7 @@ class Register
         
         // Add country selector
         self::render_country_selector($post, 'gobi_pais_id', __('País', 'gobi-core'));
-        
-        echo '<tr>';
-        echo '<th><label for="gobi_comision_id">' . __('Comisión Asignada', 'gobi-core') . '</label></th>';
-        echo '<td><select id="gobi_comision_id" name="gobi_comision_id">';
-        
-        $comisiones = get_posts([
-            'post_type' => 'gobi_comision',
-            'posts_per_page' => -1,
-            'orderby' => 'title',
-            'order' => 'ASC'
-        ]);
-        
-        $selected_comision = get_post_meta($post->ID, '_gobi_comision_id', true);
-        echo '<option value="">' . __('Seleccionar comisión...', 'gobi-core') . '</option>';
-        
-        foreach ($comisiones as $comision) {
-            $selected = selected($selected_comision, $comision->ID, false);
-            echo '<option value="' . esc_attr($comision->ID) . '"' . $selected . '>' . esc_html($comision->post_title) . '</option>';
-        }
-        
-        echo '</select></td>';
-        echo '</tr>';
+        self::render_comision_selector($post);
         
         echo '</table>';
     }
@@ -468,7 +499,20 @@ class Register
                     update_post_meta($post_id, '_gobi_organo_presentador', sanitize_text_field($_POST['gobi_organo_presentador']));
                 }
                 if (isset($_POST['gobi_comision_id'])) {
-                    update_post_meta($post_id, '_gobi_comision_id', absint($_POST['gobi_comision_id']));
+                    $proyecto_pais_id = isset($_POST['gobi_pais_id']) ? absint($_POST['gobi_pais_id']) : 0;
+                    $comision_id = absint($_POST['gobi_comision_id']);
+
+                    if (!$comision_id) {
+                        delete_post_meta($post_id, '_gobi_comision_id');
+                    } else {
+                        $comision_pais_id = absint(get_post_meta($comision_id, '_gobi_pais_id', true));
+
+                        if ($proyecto_pais_id && $comision_pais_id === $proyecto_pais_id) {
+                            update_post_meta($post_id, '_gobi_comision_id', $comision_id);
+                        } else {
+                            delete_post_meta($post_id, '_gobi_comision_id');
+                        }
+                    }
                 }
             }
         }

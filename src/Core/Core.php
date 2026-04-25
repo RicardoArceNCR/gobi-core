@@ -49,4 +49,17 @@ class Core
         require_once GOBI_CORE_PATH . 'src/Bitacora/Logger.php';
         \Gobi\Bitacora\Logger::init();
     }
+
+    /**
+     * Plugin activation hook.
+     *
+     * @return void
+     */
+    public static function activate()
+    {
+        \Gobi\Bitacora\Logger::create_table();
+        
+        // Flush rewrite rules for CPTs
+        flush_rewrite_rules();
+    }
 }
